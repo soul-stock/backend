@@ -1,13 +1,52 @@
+version: '3.8'
+
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cont_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ecoVolume:/var/lib/postgresql/data
+    networks:
+      - ecoNet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cont-backend-dev
+    container_name: cont_backend_spring
+    volumes:
+      - ./:/app
     ports:
       - "8080:8080"
-    volumes:
-      - .:/app
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-    restart: unless-stopped
+      DATABASE_URL: jdbc:postgresql://postgres:5432/mydb
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecoNet
+    # 개발 환경 : hot-reloading을 위해 bootRun 사용
+    # 운영 환경 : Dockerfile의 ENTRYPOINT가 실행 되도록 command 제거
+    command: >
+      ./gradlew bootRun --no-daemon
+
+networks:
+  ecoNet:
+    driver: bridge
+
+volumes:
+  ecoVolume:
