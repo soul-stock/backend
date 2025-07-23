@@ -1,6 +1,28 @@
+# JWT
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# Spring
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: spring
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: create  # 운영 시, validate 또는 update 설정
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        jdbc:
+          batch_size: 50
+        order_updates: true
+        order_inserts: true
+    open-in-view: false
 
   # Database
   datasource:
@@ -9,18 +31,13 @@ spring:
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 4
-
-  # JPA
-  jpa:
-    database: postgresql
-    hibernate:
-      ddl-auto: create
-
-  # JWT
-  jwt:
-    secret: mySecretKey
-    expiration: 86400000
+      minimum-idle: 10
+      idle-timeout: 600000
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      auto-commit: true
+      max-lifetime: 1800000
+      leak-detection-threshold: 300000
 
   # JSP
   mvc:
