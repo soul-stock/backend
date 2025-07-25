@@ -1,0 +1,65 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>대시보드</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn { padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; }
+        .btn:hover { background: #c82333; }
+        .card { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>대시보드</h2>
+        <button onclick="logout()" class="btn">로그아웃</button>
+    </div>
+
+    <div id="message"></div>
+
+    <div class="card">
+        <h3>환영합니다!</h3>
+        <p>사용자: <strong>${email}</strong></p>
+        <p>JWT 토큰으로 인증된 페이지입니다.</p>
+    </div>
+
+    <div class="card">
+        <h4>보호된 콘텐츠</h4>
+        <p>이 페이지는 로그인한 사용자만 접근할 수 있습니다.</p>
+        <p>JWT 토큰이 유효한 동안 이 콘텐츠를 볼 수 있습니다.</p>
+    </div>
+
+    <p><a href="/">홈으로</a></p>
+</div>
+
+<script>
+    function logout() {
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('message').innerHTML = '<div class="message success">' + data.message + '</div>';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>

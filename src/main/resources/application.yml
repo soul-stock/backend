@@ -13,7 +13,7 @@ spring:
   # JPA
   jpa:
     hibernate:
-      ddl-auto: create  # 운영 시, validate 또는 update 설정
+      ddl-auto: update  # 운영 시, validate 또는 update 설정
     properties:
       hibernate:
         format_sql: false

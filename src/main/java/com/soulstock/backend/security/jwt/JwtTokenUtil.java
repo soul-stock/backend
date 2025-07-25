@@ -33,13 +33,13 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public String getUsernameFromJwtToken(String token) {
-        Claims claims = Jwts.parserBuilder()
+    public String getEmailFromJwtToken(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+                .getBody()
+                .getSubject();
     }
 
     public JwtTokenStatus validateJwtToken(String token) {

@@ -1,21 +1,20 @@
-package com.soulstock.backend.domain.member;
+package com.soulstock.backend.domain.member.service;
 
+import com.soulstock.backend.domain.member.MemberRepository;
 import com.soulstock.backend.domain.member.entity.Member;
+import com.soulstock.backend.security.dto.RegisterRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     public void validateBeforeRegister(Member member) {
         if (memberRepository.existsByEmail(member.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
-
         if (memberRepository.existsByNickname(member.getNickname())) {
             throw new RuntimeException("Nickname already exists");
         }
@@ -25,7 +24,12 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public Member findByUsername(String email) {
-        return memberRepository.findByEmail(email).orElse(null);
+    public Member toEntity(RegisterRequestDto dto) {
+        return Member.builder()
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .name(dto.getUsername())
+                .nickname(dto.getNickname())
+                .build();
     }
 }

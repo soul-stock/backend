@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,10 +23,6 @@
     <div id="message"></div>
     <form id="registerForm">
         <div class="form-group">
-            <label for="username">사용자명:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
             <label for="email">이메일:</label>
             <input type="email" id="email" name="email" required>
         </div>
@@ -34,25 +30,39 @@
             <label for="password">비밀번호:</label>
             <input type="password" id="password" name="password" required>
         </div>
+        <div class="form-group">
+            <label for="username">사용자명:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="nickname">닉네임:</label>
+            <input type="text" id="nickname" name="nickname" required>
+        </div>
         <button type="submit" class="btn">회원가입</button>
     </form>
-    <p><a href="/login">로그인</a> | <a href="/">홈으로</a></p>
+    <p><a href="${pageContext.request.contextPath}/login">로그인</a> | <a href="${pageContext.request.contextPath}/">홈으로</a></p>
 </div>
 
 <script>
     document.getElementById('registerForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('email')['value'];
+        const password = document.getElementById('password')['value'];
+        const username = document.getElementById('username')['value'];
+        const nickname = document.getElementById('nickname')['value'];
 
         fetch('/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                username: username,
+                nickname: nickname
+            })
         })
             .then(response => response.json())
             .then(data => {
@@ -63,7 +73,7 @@
                         window.location.href = '/login';
                     }, 1500);
                 } else {
-                    messageDiv.innerHTML = '<div class="message error">' + data.message + '</div>';
+                    messageDiv.innerHTML = '<div class="message error">' + (data.message || '회원가입 실패') + '</div>';
                 }
             })
             .catch(error => {

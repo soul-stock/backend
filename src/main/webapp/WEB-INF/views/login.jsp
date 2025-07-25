@@ -23,8 +23,8 @@
     <div id="message"></div>
     <form id="loginForm">
         <div class="form-group">
-            <label for="username">사용자명:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="email">이메일:</label>
+            <input type="email" id="email" name="email" required>
         </div>
         <div class="form-group">
             <label for="password">비밀번호:</label>
@@ -32,22 +32,25 @@
         </div>
         <button type="submit" class="btn">로그인</button>
     </form>
-    <p><a href="/register">회원가입</a> | <a href="/">홈으로</a></p>
+    <p><a href="${pageContext.request.contextPath}/register">회원가입</a> | <a href="${pageContext.request.contextPath}/">홈으로</a></p>
 </div>
 
 <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('email')['value'];
+        const password = document.getElementById('password')['value'];
 
         fetch('/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
         })
             .then(response => response.json())
             .then(data => {

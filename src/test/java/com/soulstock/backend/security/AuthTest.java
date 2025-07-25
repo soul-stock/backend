@@ -2,7 +2,8 @@ package com.soulstock.backend.security;
 
 import com.soulstock.backend.domain.member.MemberRepository;
 import com.soulstock.backend.domain.member.entity.Member;
-import com.soulstock.backend.security.dto.UserDto;
+import com.soulstock.backend.security.Service.AuthService;
+import com.soulstock.backend.security.dto.RegisterRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +27,17 @@ public class AuthTest {
 
     @Test
     void registerMember() {
-        UserDto dto = UserDto.builder()
+        RegisterRequestDto registerDto = RegisterRequestDto.builder()
                 .email("test@example.com")
                 .password("PASSWORD")
-                .name("testName")
+                .username("testName")
                 .nickname("testNickname")
                 .build();
 
-        authService.registerUser(dto);
+        authService.register(registerDto);
 
-        Member savedMember = memberRepository.findByEmail(dto.getEmail()).orElse(null);
+        Member savedMember = memberRepository.findByEmail(registerDto.getEmail()).orElse(null);
         assertThat(savedMember).isNotNull();
-        assertThat(savedMember.getNickname()).isEqualTo(dto.getNickname());
+        assertThat(savedMember.getNickname()).isEqualTo(registerDto.getNickname());
     }
 }

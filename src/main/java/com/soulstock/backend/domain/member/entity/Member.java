@@ -1,5 +1,6 @@
 package com.soulstock.backend.domain.member.entity;
 
+import com.soulstock.backend.security.dto.RegisterRequestDto;
 import lombok.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,11 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
-
-    @PrePersist
-    public void prePersist() {
-        if (level == null) level = Level.BRONZE;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,9 +36,14 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Level level;
+    private Role role;
 
     @CreationTimestamp
     @Column(nullable = false, columnDefinition = "TIMESTAMP(0)")
-    private LocalDateTime levelUpDate;
+    private LocalDateTime roleUpDate;
+
+    @PrePersist
+    private void prePersist() {
+        if (role == null) role = Role.BRONZE;
+    }
 }
