@@ -2,6 +2,7 @@ package com.soulstock.backend.security.dto;
 
 import com.soulstock.backend.domain.member.entity.Member;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,13 +11,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Data
+@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
-
-    private Member member;
-
-    public UserDetailsImpl(Member member) {
-        this.member = member;
-    }
+    private final Member member;
 
     // 권한 생성
     @Override

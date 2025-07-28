@@ -1,6 +1,5 @@
 package com.soulstock.backend.domain.member.entity;
 
-import com.soulstock.backend.security.dto.RegisterRequestDto;
 import lombok.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
