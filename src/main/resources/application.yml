@@ -39,8 +39,14 @@ spring:
       max-lifetime: 1800000
       leak-detection-threshold: 300000
 
-  # JSP
-  mvc:
-    view:
-      prefix: /WEB-INF/views/
-      suffix: .jsp
+  # Thymeleaf
+  thymeleaf:
+    cache: false
+    check-template: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+  web:
+    resources:
+      static-locations: classpath:/static/

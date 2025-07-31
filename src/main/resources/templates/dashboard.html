@@ -1,6 +1,5 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>대시보드</title>
@@ -26,7 +25,7 @@
 
     <div class="card">
         <h3>환영합니다!</h3>
-        <p>사용자: <strong>${email}</strong></p>
+        <p>사용자: <strong th:text="${email}">이메일</strong></p>
         <p>JWT 토큰으로 인증된 페이지입니다.</p>
     </div>
 
@@ -36,7 +35,7 @@
         <p>JWT 토큰이 유효한 동안 이 콘텐츠를 볼 수 있습니다.</p>
     </div>
 
-    <p><a href="/">홈으로</a></p>
+    <p><a th:href="@{/}">홈으로</a></p>
 </div>
 
 <script>

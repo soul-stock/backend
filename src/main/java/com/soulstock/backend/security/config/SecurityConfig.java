@@ -47,13 +47,12 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/**").permitAll()  // API 경로 허용
+                    .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/img/**").permitAll()
-                    .requestMatchers("/WEB-INF/views/**").permitAll()  // JSP 파일 경로 허용
+                    .requestMatchers("/WEB-INF/views/**").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }

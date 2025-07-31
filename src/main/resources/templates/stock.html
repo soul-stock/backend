@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${stockName} + ' 주식 분석'">Stock Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .summary {
+      margin-top: 30px;
+    }
+    .summary-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 th:text="${stockName} + ' (' + ${stockCode} + ')'">삼성전자 (005930)</h1>
+    <p th:text="'기준일: ' + ${date}">기준일: 2025-07-31</p>
+
+    <canvas id="stockChart" width="800" height="400"></canvas>
+
+    <div class="summary">
+      <h2>분석 요약</h2>
+      <div class="summary-item">
+        <strong>종가:</strong> <span th:text="${closePrice}">75,000</span>원
+      </div>
+      <div class="summary-item">
+        <strong>등락률:</strong> <span th:text="${changeRate}">+1.25%</span>
+      </div>
+      <div class="summary-item">
+        <strong>거래량:</strong> <span th:text="${volume}">10,234,000</span>주
+      </div>
+      <div class="summary-item">
+        <strong>AI 분석 결과:</strong>
+        <p th:text="${aiSummary}">단기적으로 상승 가능성이 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('stockChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: /*[[${labels}]]*/ ["2025-07-25", "2025-07-26", "2025-07-27", "2025-07-28", "2025-07-29", "2025-07-30", "2025-07-31"],
+        datasets: [{
+          label: '주가',
+          data: /*[[${prices}]]*/ [73000, 74000, 73500, 74500, 75000, 74800, 75500],
+          borderColor: '#4e73df',
+          backgroundColor: 'rgba(78, 115, 223, 0.1)',
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          x: { display: true },
+          y: { display: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
