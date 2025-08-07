@@ -1,85 +1,345 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title th:text="${stockName} + ' 주식 분석'">Stock Analysis</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>삼성전자 주식 분석</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#2563eb',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    .summary {
-      margin-top: 30px;
-    }
-    .summary-item {
-      padding: 10px 0;
-      border-bottom: 1px solid #ddd;
-    }
-    canvas {
-      margin-top: 20px;
-    }
+    :where([class^="ri-"])::before { content: "\f3c2"; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1 th:text="${stockName} + ' (' + ${stockCode} + ')'">삼성전자 (005930)</h1>
-    <p th:text="'기준일: ' + ${date}">기준일: 2025-07-31</p>
-
-    <canvas id="stockChart" width="800" height="400"></canvas>
-
-    <div class="summary">
-      <h2>분석 요약</h2>
-      <div class="summary-item">
-        <strong>종가:</strong> <span th:text="${closePrice}">75,000</span>원
+<body class="bg-gray-50 min-h-screen">
+<header class="bg-white shadow-sm border-b border-gray-100 fixed w-full top-0 z-10">
+  <div class="px-4 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <button class="w-10 h-10 flex items-center justify-center text-gray-600 cursor-pointer">
+          <i class="ri-arrow-left-line ri-lg"></i>
+        </button>
+        <div>
+          <h1 th:text="${stockName}" class="text-lg font-bold text-gray-900">주식명</h1>
+          <p th:text="${stockCode}" class="text-sm text-gray-500">000000</p>
+        </div>
       </div>
-      <div class="summary-item">
-        <strong>등락률:</strong> <span th:text="${changeRate}">+1.25%</span>
-      </div>
-      <div class="summary-item">
-        <strong>거래량:</strong> <span th:text="${volume}">10,234,000</span>주
-      </div>
-      <div class="summary-item">
-        <strong>AI 분석 결과:</strong>
-        <p th:text="${aiSummary}">단기적으로 상승 가능성이 있습니다.</p>
+      <div class="flex items-center space-x-2">
+        <button class="w-10 h-10 flex items-center justify-center text-gray-600 cursor-pointer">
+          <i class="ri-star-line ri-lg"></i>
+        </button>
+        <button class="w-10 h-10 flex items-center justify-center text-gray-600 cursor-pointer">
+          <i class="ri-notification-line ri-lg"></i>
+        </button>
       </div>
     </div>
+    <div class="mt-2">
+      <p class="text-xs text-gray-500" id="currentTime" th:text="${date}">2025년 7월 31일</p>
+    </div>
   </div>
+</header>
 
-  <script>
-    const ctx = document.getElementById('stockChart').getContext('2d');
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: /*[[${labels}]]*/ ["2025-07-25", "2025-07-26", "2025-07-27", "2025-07-28", "2025-07-29", "2025-07-30", "2025-07-31"],
-        datasets: [{
-          label: '주가',
-          data: /*[[${prices}]]*/ [73000, 74000, 73500, 74500, 75000, 74800, 75500],
-          borderColor: '#4e73df',
-          backgroundColor: 'rgba(78, 115, 223, 0.1)',
-          tension: 0.3
-        }]
-      },
-      options: {
-        scales: {
-          x: { display: true },
-          y: { display: true }
+<main class="pt-24 pb-6">
+  <section class="px-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+      <div class="flex items-end justify-between mb-4">
+        <div>
+          <div class="text-3xl font-bold text-gray-900" th:text="${closePrice} + '원'">1,000원</div>
+          <div class="flex items-center space-x-2 mt-1">
+            <span class="text-red-500 font-semibold" th:text="'+' + ${#numbers.formatInteger(1500, 0, 'COMMA')}"></span>
+            <span class="text-red-500 font-semibold" th:text="'+2.03%'"></span>
+            <div class="w-4 h-4 flex items-center justify-center">
+              <i class="ri-arrow-up-line text-red-500"></i>
+            </div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-sm text-gray-500">거래량</div>
+          <div class="text-lg font-semibold text-gray-900" th:text="${volume} + '주'">1,000주</div>
+        </div>
+      </div>
+
+      <div class="flex space-x-1 mb-4">
+        <button class="px-3 py-1 text-sm bg-primary text-white rounded-button cursor-pointer" data-period="1d">1일</button>
+        <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-button cursor-pointer" data-period="1w">1주일</button>
+        <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-button cursor-pointer" data-period="1m">1개월</button>
+      </div>
+      <div id="stockChart" class="w-full h-64"></div>
+    </div>
+  </section>
+  <section class="px-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center space-x-2 mb-4">
+        <div class="w-6 h-6 flex items-center justify-center">
+          <i class="ri-robot-line text-primary ri-lg"></i>
+        </div>
+        <h2 class="text-lg font-bold text-gray-900">AI 투자 분석</h2>
+      </div>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center space-x-2 mb-2">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="ri-arrow-up-circle-fill text-green-600"></i>
+          </div>
+          <span class="font-semibold text-green-800">매수 추천</span>
+        </div>
+        <p class="text-sm text-green-700">단기적으로 상승 모멘텀이 지속될 것으로 예상됩니다.</p>
+      </div>
+
+      <div class="mb-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">예상 목표가 범위</h3>
+        <div class="relative bg-gray-100 rounded-full h-2 mb-2">
+          <div class="absolute left-0 top-0 h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-full" th:style="'width: ' + 65 + '%'"></div>
+          <div class="absolute bg-white border-2 border-green-600 rounded-full w-4 h-4 -top-1" th:style="'left: ' + 65 + '%; transform: translateX(-50%)'"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500">
+          <span th:text="${#numbers.formatInteger(72000, 0, 'COMMA')} + '원'">72,000원</span>
+          <span class="font-semibold text-green-600" th:text="'현재: ' + ${aiSummary} + '원'">현재: 75,500원</span>
+          <span th:text="${#numbers.formatInteger(82000, 0, 'COMMA')} + '원'">82,000원</span>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">분석 근거</h3>
+        <ul class="space-y-1">
+          <li class="flex items-start space-x-2 text-sm text-gray-600">
+            <div class="w-1 h-1 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+            <span>반도체 업황 개선으로 인한 수익성 향상 기대</span>
+          </li>
+          <li class="flex items-start space-x-2 text-sm text-gray-600">
+            <div class="w-1 h-1 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+            <span>AI 및 데이터센터 수요 증가 수혜 예상</span>
+          </li>
+          <li class="flex items-start space-x-2 text-sm text-gray-600">
+            <div class="w-1 h-1 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+            <span>기술적 지표상 상승 추세 지속</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">주가변동 분포 분석</h2>
+
+      <div id="distributionChart" class="w-full h-48 mb-4"></div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xs text-gray-500 mb-1">평균가</div>
+          <div class="text-lg font-semibold text-gray-900" th:text="${#numbers.formatInteger(74250, 0, 'COMMA')} + '원'">74,250원</div>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xs text-gray-500 mb-1">표준편차</div>
+          <div class="text-lg font-semibold text-gray-900" th:text="${#numbers.formatInteger(2150, 0, 'COMMA')} + '원'">2,150원</div>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xs text-gray-500 mb-1">현재가 백분위</div>
+          <div class="text-lg font-semibold text-primary" th:text="${#numbers.formatDecimal(73.2, 0, 'COMMA', 1, 'POINT')} + '%'">73.2%</div>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xs text-gray-500 mb-1">변동성</div>
+          <div class="text-lg font-semibold text-secondary">중간</div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+        <div class="flex items-start space-x-2">
+          <div class="w-4 h-4 flex items-center justify-center mt-0.5">
+            <i class="ri-information-line text-blue-600 ri-sm"></i>
+          </div>
+          <div class="text-sm text-blue-700">
+            현재 주가는 평균 대비 상위 <span th:text="${#numbers.formatDecimal(73.2, 0, 'COMMA', 1, 'POINT')}">73.2</span>% 구간에 위치하며, 정상 범위 내에서 거래되고 있습니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script th:inline="javascript">
+  /* Thymeleaf로 서버에서 받은 데이터 사용 */
+  const stockData = {
+    currentPrice: 75500,
+    change: 1500,
+    changeRate: 2.03,
+    volume: 12456789,
+    targetPriceMin: 72000,
+    targetPriceMax: 82000,
+    targetPricePercent: 65,
+    analysisReason: [
+      '반도체 업황 개선으로 인한 수익성 향상 기대',
+      'AI 및 데이터센터 수요 증가 수혜 예상',
+      '기술적 지표상 상승 추세 지속'
+    ],
+    distribution: {
+      mean: 74250,
+      stdDev: 2150,
+      percentile: 73.2
+    },
+    chart: {
+      dates: ['09:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30'],
+      prices: [74000, 74200, 74800, 75100, 74900, 75200, 75600, 75300, 75400, 75200, 75500],
+      volumes: [890000, 1200000, 1450000, 980000, 1100000, 1350000, 1600000, 1200000, 1400000, 1100000, 950000]
+    }
+  };
+
+  function updateTime() {
+    const now = new Date();
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'Asia/Seoul'
+    };
+    const timeString = now.toLocaleDateString('ko-KR', options);
+    document.getElementById('currentTime').textContent = timeString;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    const stockChartDom = document.getElementById('stockChart');
+    const stockChart = echarts.init(stockChartDom);
+    const stockOption = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross' },
+        formatter: function(params) {
+          let result = params[0].axisValue + '<br/>';
+          params.forEach(function(item) {
+            if (item.seriesName === '주가') {
+              result += item.marker + item.seriesName + ': ' + item.value.toLocaleString() + '원<br/>';
+            } else {
+              result += item.marker + item.seriesName + ': ' + item.value.toLocaleString() + '주<br/>';
+            }
+          });
+          return result;
         }
-      }
+      },
+      legend: {
+        data: ['주가', '거래량'],
+        top: 0
+      },
+      xAxis: [{
+        type: 'category',
+        data: stockData.chart.dates,
+        axisPointer: { type: 'shadow' }
+      }],
+      yAxis: [{
+        type: 'value',
+        name: '주가(원)',
+        min: 73500,
+        max: 76000,
+        position: 'left',
+        axisLabel: { formatter: '{value}' }
+      }, {
+        type: 'value',
+        name: '거래량(주)',
+        position: 'right',
+        axisLabel: {
+          formatter: function(value) { return (value / 1000) + 'K'; }
+        }
+      }],
+      series: [{
+        name: '주가',
+        type: 'line',
+        yAxisIndex: 0,
+        data: stockData.chart.prices,
+        smooth: true,
+        lineStyle: { color: '#2563eb', width: 2 },
+        itemStyle: { color: '#2563eb' },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(37, 99, 235, 0.3)' },
+            { offset: 1, color: 'rgba(37, 99, 235, 0.05)' }
+          ])
+        }
+      }, {
+        name: '거래량',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: stockData.chart.volumes,
+        itemStyle: { color: 'rgba(156, 163, 175, 0.6)' }
+      }]
+    };
+    stockChart.setOption(stockOption);
+
+    const distributionChartDom = document.getElementById('distributionChart');
+    const distributionChart = echarts.init(distributionChartDom);
+    const mean = stockData.distribution.mean;
+    const stdDev = stockData.distribution.stdDev;
+    const currentPrice = stockData.currentPrice;
+
+    const xData = [];
+    const yData = [];
+    for (let i = mean - 3 * stdDev; i <= mean + 3 * stdDev; i += 100) {
+      xData.push(i);
+      const normalValue = Math.exp(-0.5 * Math.pow((i - mean) / stdDev, 2)) / (stdDev * Math.sqrt(2 * Math.PI));
+      yData.push(normalValue * 1000000);
+    }
+
+    const distributionOption = {
+      tooltip: {
+        trigger: 'axis',
+        formatter: function(params) {
+          const price = params[0].axisValue;
+          const probability = params[0].value;
+          return `가격: ${parseInt(price).toLocaleString()}원<br/>확률밀도: ${probability.toFixed(2)}`;
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: xData,
+        axisLabel: {
+          formatter: function(value) { return (value / 1000) + 'K'; }
+        }
+      },
+      yAxis: { type: 'value', show: false },
+      series: [{
+        type: 'line',
+        data: yData,
+        smooth: true,
+        symbol: 'none',
+        lineStyle: { color: '#2563eb', width: 2 },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(37, 99, 235, 0.4)' },
+            { offset: 1, color: 'rgba(37, 99, 235, 0.1)' }
+          ])
+        },
+        markLine: {
+          data: [{
+            xAxis: currentPrice,
+            lineStyle: { color: '#dc2626', width: 2, type: 'dashed' },
+            label: { formatter: '현재가', position: 'end', color: '#dc2626' }
+          }]
+        }
+      }]
+    };
+    distributionChart.setOption(distributionOption);
+
+    const filterButtons = document.querySelectorAll('button[data-period]');
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        filterButtons.forEach(btn => {
+          btn.className = 'px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-button cursor-pointer';
+        });
+        this.className = 'px-3 py-1 text-sm bg-primary text-white rounded-button cursor-pointer';
+        // 실제 데이터 로직은 여기에 추가
+      });
     });
-  </script>
+  });
+</script>
 </body>
 </html>

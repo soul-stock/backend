@@ -48,7 +48,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/img/**").permitAll()
+                    .requestMatchers("/", "/login", "/register", "/stock/**", "/css/**", "/js/**", "/img/**").permitAll()
                     .requestMatchers("/WEB-INF/views/**").permitAll()
                     .anyRequest().authenticated()
             )
