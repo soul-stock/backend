@@ -1,5 +1,6 @@
 package com.soulstock.backend.domain.economy.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
@@ -7,20 +8,38 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true) // 나머지 필드는 무시
 public class StockItemDto {
 
-    private String basDt;
-    private String srtnCd;
-    private String isinCd;
-    private String itmsNm;
-    private String mrktCtg;
-    private String clpr;
-    private String vs;
-    private String fltRt;
-    private String mkp;
-    private String hipr;
-    private String lopr;
-    private String trqu;
-    private String trPrc;
-    private String lstgStCnt;
-    private String mrktTotAmt;
+    @JsonAlias("basDt")
+    private String date;
 
+    @JsonAlias("srtnCd")
+    private String stockCode;
+
+    @JsonAlias("itmsNm")
+    private String stockName;
+
+    @JsonAlias("mrktCtg")
+    private String market;
+
+    @JsonAlias("clpr")
+    private int closingPrice;
+
+    @JsonAlias("vs")
+    private int variation;
+
+    @JsonAlias("fltRt")
+    private String variationRate;
+
+    @JsonAlias("trqu")
+    private int tradeVolume;
+
+    @JsonAlias("trPrc")
+    private long tradePrice;
+
+    @JsonAlias("lstgStCnt")
+    private long stockCount;
+
+    @JsonAlias("mrktTotAmt")
+    private long totalAmount;
+
+    private String category = "domestic";
 }
